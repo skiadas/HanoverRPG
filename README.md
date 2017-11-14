@@ -44,4 +44,5 @@ The main file for the project is [src/BattleFTP.hs](src/BattleFTP.hs). By defaul
 
 To generate documentation, run: `make doc` from the root `BattleFTP` directory.
 
-Testing
+
+Temp change to test how pull requests would work
