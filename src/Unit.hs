@@ -1,8 +1,8 @@
 {-|
 Module      : Unit
 Description : The Unit module
-Copyright   : (c) Some Guy, 2013
-                  Someone Else, 2014
+Copyright   : (c) Collin Umphrey, 2017
+                  Graham Wood, 2017
 License     : MIT
 Maintainer  : sample@email.com
 
