@@ -1,10 +1,10 @@
 {-|
 Module      : Combat
 Description : The Combat module
-Copyright   : (c) Some Guy, 2013
-                  Someone Else, 2014
+Copyright   : (c) Kenny Jarnagin, 2017
+                  Lucas Miller, 2017
 License     : MIT
-Maintainer  : sample@email.com
+Maintainer  : jarnagink19@hanover.edu
 
 Here is a longer description of this module, containing some
 commentary with @some markup@. FIX THIS
