@@ -1,13 +1,15 @@
 {-|
 Module      : Game
 Description : The Game module
-Copyright   : (c) Some Guy, 2013
-                  Someone Else, 2014
+Copyright   : (c) William Cole Vanderpohl, 2017
+                  Sakib Haque, 2017
 License     : MIT
-Maintainer  : sample@email.com
+Maintainer  : haques18@hanover.edu
 
 Here is a longer description of this module, containing some
-commentary with @some markup@. FIX THIS
+commentary with @some markup@:
+	This module is the main game module that combines the other files
+	and triggers the main function that kicks-off the game.
 -}
 module Game
 (
