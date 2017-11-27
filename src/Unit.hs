@@ -1,5 +1,5 @@
 
-Module      : Unit
+{-Module      : Unit
 Description : The Unit module
 Copyright   : (c) Collin Umphrey, 2017
                   Graham Wood, 2017
@@ -22,6 +22,16 @@ Attributes
 -}
 module Unit
 (
+	
+    type Name = String
+    type HP = Int
+    type Attack = Int
+    type Defense = Int
+    type Speed = Int
+	data Unit = (Name, HP, Attack, Defense, Speed, Death, pType)
+	data Death = False | True
+	data IsPlayer = False | True
+
 
 ) where
 
