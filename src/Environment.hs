@@ -2,7 +2,7 @@
 Module      : Environment
 Description : The Environment module
 Copyright   : (c) Gage Hafl, 2017
-                  Terriyon, 2017
+                  Terriyon Veasy, 2017
 License     : MIT
 Maintainer  : haflg19@hanover.edu
 
