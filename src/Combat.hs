@@ -11,7 +11,11 @@ commentary with @some markup@. FIX THIS
 -}
 module Combat
 (
-
+	Action(...)
 ) where
 
--- Module starts here.
+  type Heal   = (Source, Target, Int)
+  data Attack = (Source, Target, Int)
+  type Action = Attack | Heal 
+
+
