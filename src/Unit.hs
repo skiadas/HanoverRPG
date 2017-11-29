@@ -66,16 +66,16 @@ changeHealth :: Attributes -> Int -> Attributes
 createHeatlh (oldHP, atk, def, spd) newHP = (newHP, atk, def, spd)
 
 --given a set of attributes, and a new Attack, returns those attributes with the updated stat
-changeHealth :: Attributes -> Int -> Attributes
-createHeatlh (hp, oldAtk, def, spd) newAtk = (hp, newAtk, def, spd)
+changeAttack :: Attributes -> Int -> Attributes
+createAttack (hp, oldAtk, def, spd) newAtk = (hp, newAtk, def, spd)
 
 --given a set of attributes, and a new Defense, returns those attributes with the updated stat
-changeHealth :: Attributes -> Int -> Attributes
-createHeatlh (hp, atk, oldDef, spd) newDef = (hp, atk, newDef, spd)
+changeDefense :: Attributes -> Int -> Attributes
+createDefense (hp, atk, oldDef, spd) newDef = (hp, atk, newDef, spd)
 
 --given a set of attributes, and a new Speed, returns those attributes with the updated stat
-changeHealth :: Attributes -> Int -> Attributes
-createHeatlh (hp, atk, def, oldSpd) newSpd = (hp, atk, def, newSpd)
+changeSpeed :: Attributes -> Int -> Attributes
+createSpeed (hp, atk, def, oldSpd) newSpd = (hp, atk, def, newSpd)
 
 
 
