@@ -22,60 +22,71 @@ Attributes
 -}
 module Unit
 (
-
-    type Name = String
-    type HP = Int
-    type Attack = Int --A stat that influences damage done in battle
-    type Defense = Int --A stat that influences how much damage is taken in battle
-    type Speed = Int --A stat that influences avoid chance and turn order
-    data Attributes (HP,Attack,Defense,Speed)
-	data Unit = (Name, Attributes, Death, pType) --The collection of important stats
-	data Death = False | True --Is a unit dead or not. Defaults to alive
-	data IsPlayer = False | True --Is it a player or not. Defaults to Enemy
-
+ createUnit,
+ changeHealth,
+ changeAttack,
+ changeDefense,
+ changeSpeed,
+ getName,
+ getHealth,
+ getAttack,
+ getDefense,
+ getSpeed
 
 ) where
+
+
+type Username = String
+type HP = Int
+type Attack = Int --A stat that influences damage done in battle
+type Defense = Int --A stat that influences how much damage is taken in battle
+type Speed = Int --A stat that influences avoid chance and turn order
+data Attributes = Attributes (HP,Attack,Defense,Speed)
+data Unit = Unit (Username, Attributes, Death, IsPlayer) --The collection of important stats
+type Death = Bool --Is a unit dead or not. Defaults to alive
+type IsPlayer = Bool  --Is it a player or not. Defaults to Enemy
 
 -- Module starts here.
 
 --Given a unit returns that unit's name
 getName :: Unit -> String
-getName (unitName, _, _, _, _, _, _) = unitName
+getName (Unit (pName, _, _, _)) = pName
 
 --given a unit's attributes, returns its HP
 getHealth :: Attributes -> Int
-getName (hp, _, _, _) = hp
+getHealth (Attributes (hp, _, _, _)) = hp
 
 --given a unit's attributes, returns its Attack
 getAttack :: Attributes -> Int
-getAttack (_, atk, _, _) = atk
+getAttack (Attributes (_, atk, _, _)) = atk
 
 --given a unit's attributes, returns its Defense
 getDefense :: Attributes -> Int
-getDefense (_, _, def, _) = def
+getDefense (Attributes (_, _, def, _)) = def
 
 --given a unit's attributes, returns its Speed
 getSpeed :: Attributes -> Int 
-getSpeed (_, _, _, spd) = spd
+getSpeed (Attributes (_, _, _, spd)) = spd
 
-createUnit :: String -> Int -> Int -> Int -> Int -> Bool -> Unit
-createUnit unitName maxHP atk def spd player = (unitName, (maxHP, atk, def, spd), False, player)
+createUnit :: Username -> HP -> Attack -> Defense -> Speed -> IsPlayer -> Unit
+createUnit unitName maxHP atk def spd player = (Unit (unitName, (Attributes (maxHP, atk, def, spd)), False, player))
 
 --given a set of attributes, and a new HP stat, returns those attributes with the updated stat
 changeHealth :: Attributes -> Int -> Attributes
-createHeatlh (oldHP, atk, def, spd) newHP = (newHP, atk, def, spd)
+changeHealth (Attributes (oldHP, atk, def, spd)) newHP = (Attributes (newHP, atk, def, spd))
 
 --given a set of attributes, and a new Attack, returns those attributes with the updated stat
 changeAttack :: Attributes -> Int -> Attributes
-createAttack (hp, oldAtk, def, spd) newAtk = (hp, newAtk, def, spd)
+changeAttack (Attributes (hp, oldAtk, def, spd)) newAtk = (Attributes (hp, newAtk, def, spd))
 
 --given a set of attributes, and a new Defense, returns those attributes with the updated stat
 changeDefense :: Attributes -> Int -> Attributes
-createDefense (hp, atk, oldDef, spd) newDef = (hp, atk, newDef, spd)
+changeDefense (Attributes (hp, atk, oldDef, spd)) newDef = (Attributes (hp, atk, newDef, spd))
 
 --given a set of attributes, and a new Speed, returns those attributes with the updated stat
 changeSpeed :: Attributes -> Int -> Attributes
-createSpeed (hp, atk, def, oldSpd) newSpd = (hp, atk, def, newSpd)
+changeSpeed (Attributes (hp, atk, def, oldSpd)) newSpd = (Attributes (hp, atk, def, newSpd))
+
 
 
 
