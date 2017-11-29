@@ -12,15 +12,17 @@ commentary with @some markup@.
 import Combat.Action 
 module Combat
 (
-	updatedUnit
+	updateUnit
 ) where
 
-amountOfDamage :: Unit -> Double
-amountOfDamage source = error "Fix me" --(attack*speed)/10 is the formula used
+actionValue :: Unit -> Action -> Double
+actionValue source (Attack (source, target)) = -(attack*speed)/10 
+actionValue source (Heal (source, target))   = 10.0      
 
 
-updatedUnit :: Unit -> Double -> Unit
-updatedUnit target = error "Fix me" --basically update the target's current state
+updateUnit :: Unit -> Unit -> Action -> Unit --Must update what a "Unit" is based on Unit.hs
+updateUnit source (health, attack, defense, speed) action = health + effect
+    where effect = actionValue source action
 
 
 
