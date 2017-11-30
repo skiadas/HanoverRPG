@@ -15,25 +15,37 @@ commentary:
 -}
 module AI
 (
-    -- other modules
-    module Unit,
-    module Combat,
     -- ** A data type
-    AI
+    AI, -- exporting module
     -- some functions
-
+    findLowestHp
 ) where
 
 -- Module starts here.
 
-import Combat
-import Unit
+--import Combat.action
+--import Unit
 
-data AI = Unit -> Action 
+-- A function that returns the AI unit with the least health.
+findLowestHp:: [Unit] -> Unit
+findLowestHp (x:[])                  = x
+findLowestHp (x,y:rest) 
+        |x.getHealth < y.getHealth   = findLowestHp (x:rest)
+        |x.getHealth == y.getHealth  = findLowestHp (x:rest)
+        |otherwise                   = findLowestHp (y:rest)
 
-main:: IO a
-main = error "nothing now."
-      --do
-      -- all of the gets
-      -- do stuff based on stats
-      --return something
+-- A function that looks for an Ai unit whose hp<50%
+lessThan50PercentHp:: [Unit] -> Bool
+lessThan50PercentHp []      = False
+lessThan50PercentHp (x:xs)
+    |x.getHealth <= half    = True
+    |otherwise              = lessThan50PercentHp (xs)
+        where half = (x.getMaxHealth)/2
+
+-- A function that returns an Action for the AI to perform. 
+chooseAction:: Unit -> [Unit] -> [Unit] -> Action
+chooseAction ai (ais:friends) (player:rest) 
+            |lessThan50PercentHp (ai:ais:friends) = Heal (ai, allie)
+            |otherwise                            = Attack (ai, enemy) 
+                where allie = findLowestHp (ai:ais:friends)
+                      enemy = findLowestHp (player:rest)
