@@ -10,21 +10,20 @@ Here is a longer description of this module, containing some
 commentary with @some markup@. 
 -}
 import Combat.Action 
+import Unit
 module Combat
 (
 	updateUnit
 ) where
 
-actionValue :: Unit -> Action -> Double
-actionValue source (Attack (source, target)) = -(attack*speed)/10 
-actionValue source (Heal (source, target))   = 10.0      
+actionValue :: Unit -> Action -> Int
+actionValue source (Attack (source, target)) = -((attack*speed)/10) + defense
+    where attack  = getAttack source
+          speed   = getSpeed source
+          defense = (getDefense target) % 2
+actionValue source (Heal (source, _))   = 10
 
-
-updateUnit :: Unit -> Unit -> Action -> Unit --Must update what a "Unit" is based on Unit.hs
-updateUnit source (health, attack, defense, speed) action = health + effect
+updateUnit :: Unit -> Unit -> Action -> Unit 
+updateUnit source target action = health + effect
     where effect = actionValue source action
-
-
-
-
-
+    	  health = getHealth target

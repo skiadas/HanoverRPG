@@ -60,4 +60,3 @@ updateMap (map, loc, weather) (x, y)) = (map, (x,y), JSON.weather[x][y]
 -- Takes in the current map and returns a Bool based on if the player is currently Inside (ie. on an I Block)
 isInside :: Map -> Bool
 isInside (map, loc, _ ) = map[x][y] == I
-
