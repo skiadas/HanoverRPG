@@ -10,57 +10,53 @@ Maintainer  : haflg19@hanover.edu
 Here is a longer description of this module, containing some
 commentary with @some markup@. FIX THIS
 -}
+import State
 module Environment
 (
+	Location,
+	Map (...),
+	Block,
 
-
+	initMap,
+	getWeather,
+	getMap,
+	getLocation,
+	updateMap
 ) where
 
 -- Module starts here.
 
+ -- Needs Fixed, Possible Block types: S (Start), G (Goal)
+data Type = X | O | I
 data Weather = Rain | Wind | Snow | Clear
-data Type = B | S | G | O | E | Q | Stairs {- Boundary | Start | Goal | Outside | Entrance/Exit | Quest Objective | Stairs -}
 data Floor = 1 | 2 | 3
 
-type Map = ([Block], Location) {- Grid Map, each Block is a place the player can move to -}
-type Block = (Loc, Up, Left, Down, Right) {- (Current Type, Type if Up, Type if Right, Type if Down, Type if Left) -}
-type Loc = (Type, String, Floor) {- (Name, Floor) -}
+type Map = ([Block], Location, Weather) -- Grid Map, each Block is a place the player can move to
+type Block = (Type, Type, Type, Type, Type) -- Current block Type, Up, Right, Down, Left
 type Location = (Num, Num)
-type Building = (String, [Map], Location) {- libraryMap = (JSON.library, [JSON.library.0, JSON.library.1, JSON.library.2], JSON.library.start) -}
 
-Weather ::      weather = Clear
-(Num, Num) ::   location = (0, 0) {- map.world.start -}
-Map ::          worldMap = [[]] {- map.world.0 -}
+-- returns the starting map from the JSON file
+initMap :: Map
+initMap = (JSON.map, JSON.spawn, JSON.weather)
 
-{-
-Possible Variables:
-    Num :: moves = 0
-    [(Num, Num)] :: visited = []
--}
+-- returns the weather variable
+getWeather :: Map -> Weather
+getWeather (_, _, weather) = weather
 
-{- returns the weather variable -}
-getWeather :: Weather
-getWeather = weather
+-- returns the players current Location
+getLocation :: Map -> Location
+getLocation (_, Location, _) = location
 
-{- returns the players current Location -}
-getLocation :: Location
-getLocation = location
+-- returns the map variable
+getMap :: Map
+getMap (map, _, _) = Map
 
-{- changes weather variable, based on random number generation -}
-changeWeather :: Weather
-changeWeather |
-    (Random.gen(10) < 3) = weather {- generate random num 0-3, 1 = Rain, 2 = Wind, 3 = Snow, 4 = Clear -}
-    otherwise            = weather
+-- Not Working !!! Needs to correctly search the JSON file in order to update the weather
+-- Takes in the current map and a Location, and returns a new Map with the updated Location and Weather
+updateMap :: Map -> Location -> Map
+updateMap (map, loc, weather) (x, y)) = (map, (x,y), JSON.weather[x][y]
 
-{- takes a location, and returns the World Map with the player Location updated -}
-updateLocation :: Location -> Map
-updateMap (x, y) = map
-
-{- automatically calls inside updateLocation function, checks if the player has gone Inside (ie. moved to an `E` Block) -}
-goInside :: Location -> Building
-goInside loc@(x, y) = (bd, JSON.bd, JSON.bd.start)
-    where bd = JSON.world.buildings.find( (x, y) )
-
-{- take the sections of the map from the JSON file and combine them into a larger array; the map -}
-makeMap :: [[Num]] -> Maybe [[Num]] -> Maybe [[Num]] -> [[[Num]]]
-makeMap a b c = a ++ b ++ c
+-- Not Working !!! Needs to get the Block that the player is in, based on the given Map & Location, then return whether the player is on an 'Inside' Block
+-- Takes in the current map and returns a Bool based on if the player is currently Inside (ie. on an I Block)
+isInside :: Map -> Bool
+isInside (map, loc, _ ) = map[x][y] == I
