@@ -16,22 +16,14 @@ module Combat
 	updateUnit
 ) where
 
-actionValue :: Unit -> Action -> Double
-actionValue source (Attack (source, target)) = -(attack*speed)/10 
-    where attack = getAttack source
-          speed  = getSpeed source
-actionValue source (Heal (source, target))   = 10.0      
-
-getTargetHealth :: Unit -> Double
-getTargetHealth target = getHealth target --Can we rewrite this so it doesn't take a parameter?
-
+actionValue :: Unit -> Action -> Int
+actionValue source (Attack (source, target)) = -((attack*speed)/10) + defense
+    where attack  = getAttack source
+          speed   = getSpeed source
+          defense = (getDefense target) % 2
+actionValue source (Heal (source, _))   = 10
 
 updateUnit :: Unit -> Unit -> Action -> Unit 
 updateUnit source target action = health + effect
     where effect = actionValue source action
-          health = getTargetHealth target
-
-
-
-
-
+    	  health = getHealth target
