@@ -26,37 +26,38 @@ module Environment
 
 -- Module starts here.
 
+ -- Needs Fixed, Possible Block types: S (Start), G (Goal)
+data Type = X | O | I
 data Weather = Rain | Wind | Snow | Clear
-data Type = B | S | G | O | E | Q | Stairs {- Boundary | Start | Goal | Outside | Entrance/Exit | Quest Objective | Stairs -}
 data Floor = 1 | 2 | 3
 
-type Map = ([Block], Location, Weather) {- Grid Map, each Block is a place the player can move to -}
-type Block = (Type, Type, Type, Type, Type) {- Current block Type, Up, Right, Down, Left -}
+type Map = ([Block], Location, Weather) -- Grid Map, each Block is a place the player can move to
+type Block = (Type, Type, Type, Type, Type) -- Current block Type, Up, Right, Down, Left
 type Location = (Num, Num)
 
-
-{-
-Possible Variables:
-    Num :: moves = 0
-    [(Num, Num)] :: visited = []
--}
+-- returns the starting map from the JSON file
 initMap :: Map
-initMap = JSON.map
-{- returns the weather variable -}
-getWeather :: Map -> Weather
-getWeather (_, _, weather)  = weather
+initMap = (JSON.map, JSON.spawn, JSON.weather)
 
-{- returns the players current Location -}
+-- returns the weather variable
+getWeather :: Map -> Weather
+getWeather (_, _, weather) = weather
+
+-- returns the players current Location
 getLocation :: Map -> Location
-getLocation (_, Location, _)= location
-{- returns the map variable-}
+getLocation (_, Location, _) = location
+
+-- returns the map variable
 getMap :: Map
 getMap (map, _, _) = Map
 
-{- takes a location, and returns the World Map with the player Location updated -}
+-- Not Working !!! Needs to correctly search the JSON file in order to update the weather
+-- Takes in the current map and a Location, and returns a new Map with the updated Location and Weather
 updateMap :: Map -> Location -> Map
-updateMap (map, loc, weather) (x, y)) = (map, (x,y), JSON.weather[x][y]{- automatically calls inside updateMap function, checks if the player has gone Inside (ie. moved to an `E` Block) -}
+updateMap (map, loc, weather) (x, y)) = (map, (x,y), JSON.weather[x][y]
 
-isInside :: Location -> Bool
-isInside (map, loc, _ ) = take y (take x map) == I --***Not Complete 
+-- Not Working !!! Needs to get the Block that the player is in, based on the given Map & Location, then return whether the player is on an 'Inside' Block
+-- Takes in the current map and returns a Bool based on if the player is currently Inside (ie. on an I Block)
+isInside :: Map -> Bool
+isInside (map, loc, _ ) = map[x][y] == I
 
