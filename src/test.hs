@@ -28,8 +28,8 @@ gameLoop world@(World hero) = do
     case input of
         Exit -> handleExit
         _    -> handleDir world input
-  
-  
+
+
 drawHero (heroX, heroY) = do
   clearScreen
   setCursorPosition heroY heroX
@@ -37,7 +37,7 @@ drawHero (heroX, heroY) = do
          , SetColor Foreground Vivid Blue ]
   putStr "@"
 
-  
+
   -- when the user wants to exit we give them a thank you
   -- message and then reshow the cursor
 handleExit = do
