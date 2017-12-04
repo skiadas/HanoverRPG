@@ -9,12 +9,14 @@ Maintainer  : jarnagink19@hanover.edu
 Here is a longer description of this module, containing some
 commentary with @some markup@. 
 -}
-import Combat.Action 
-import Unit
+
 module Combat
 (
 	updateUnit
 ) where
+
+import Combat.ActionOptions
+import Unit
 
 actionValue :: Unit -> Action -> Int
 actionValue source (Attack (source, target)) = -((attack*speed)/10) + defense
@@ -27,3 +29,6 @@ updateUnit :: Unit -> Unit -> Action -> Unit
 updateUnit source target action = health + effect
     where effect = actionValue source action
     	  health = getHealth target
+
+--Need to find a way to implement IO to take a user's action to implement the action
+--Documentation is required

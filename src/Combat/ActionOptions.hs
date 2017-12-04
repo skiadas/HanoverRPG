@@ -10,12 +10,14 @@ Here is a longer description of this module, containing some
 commentary with @some markup@. 
 -}
 
-import Unit
-module Combat.Action
+
+
+module Combat.ActionOptions
 (
 	Action
 ) where
 
+import Unit
 data Action = Attack (Unit, Unit) | Heal (Unit, Unit)
 
 
