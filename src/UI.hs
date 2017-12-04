@@ -122,13 +122,13 @@ calculateStat :: Int -> String
 calculateStat stat = replicate (stat `div` 2) '█'
 
 --test data TODO: replace with real state
-health::Int 
+health::Int
 health = 100
-dex::Int 
+dex::Int
 dex = 50
-stamina::Int 
+stamina::Int
 stamina = 50
-progress::Int 
+progress::Int
 progress = 75
 combat::Bool
 combat = True
@@ -186,14 +186,14 @@ drawScreen = do
     drawString ("Slot 18: ", 11,60)
     drawString ("Slot 19: ", 12,60)
     drawString ("Slot 20: ", 13,60)
-    
+
     drawString (replicate 80 '*', 14, 0)
     drawString ("Past Events: ", 15,0)
     unless (null event1) $ drawString (event1, 16, 5)
     unless (null event2) $ drawString (event2, 17, 5)
     unless (null event3) $ drawString (event3, 18, 5)
     unless (null event4) $ drawString (event4, 19, 5)
-    
+
 drawStat :: (String, Int, Int, Int) -> IO()
 drawStat (statName, stat, x, y) = do
         drawString (statString, x,y)
@@ -207,7 +207,7 @@ drawStat (statName, stat, x, y) = do
 
 --Method to draw a string at a certain position on the screen
 --Params: string: string to draw
---Params: x: where to draw 
+--Params: x: where to draw
 --Params: y: where to draw
 drawString :: (String, Int, Int) -> IO()
 drawString (string, x, y) = do

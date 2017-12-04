@@ -46,7 +46,7 @@ commentary with @some markup@:
 	We free the President and get free tuition for a semester only.
 -}
 
---==========================================================================================================
+-- ==========================================================================================================
 -- We honestly don't think that we need all these imports, but we're importing them right now
 -- Since no other group seems to have imported any other group's modules
 -- Once the final version of all group modules are ready, we can go ahead and remove the redundant ones.
@@ -67,11 +67,17 @@ module Game
 
 -- function that asks for user name and creates character
 -- play::function play does the main game play
+-- play should have acces to current state, hero and current enemy
+play:: State -> Unit -> Unit -> IO()
+play st hero enemy = do
+
 -- playMain::function that is called by battleFTP
 
 -- simplest game idea: We start at the point, have a one-on-one fight with Hans Gruber and see if we win or lose.
 -- let's just implement that
 
 playMain:: IO()
-playMain = createUnit
 playMain = do
+	let hero = createUnit "Sakib" 100 10 10 10 True
+		 enemy = createUnit "Hans Gruber" 100 10 10 10 False
+	play
