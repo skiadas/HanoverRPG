@@ -18,34 +18,58 @@ module AI
     -- ** A data type
     AI, -- exporting module
     -- some functions
-    findLowestHp
+    findLowestHp,
+    isBoss
 ) where
 
 -- Module starts here.
 
---import Combat.action
---import Unit
+import System.Random
+import Combat.Action
+import Unit
 
 -- A function that returns the AI unit with the least health.
 findLowestHp:: [Unit] -> Unit
 findLowestHp (x:[])                  = x
 findLowestHp (x,y:rest) 
-        |x.getHealth < y.getHealth   = findLowestHp (x:rest)
-        |x.getHealth == y.getHealth  = findLowestHp (x:rest)
+        |getHealth x < getHealth y   = findLowestHp (x:rest)
+        |getHealth x == getHealth y  = findLowestHp (x:rest)
         |otherwise                   = findLowestHp (y:rest)
 
--- A function that looks for an Ai unit whose hp<50%
+-- A function that looks for an Ai unit whose hp<=75%
+lessThan75PercentHp:: [Unit] -> Bool
+lessThan75PercentHp []        = False
+lessThan75PercentHp (x:xs)
+    |getHealth x <= fourth    = True
+    |otherwise                = lessThan75PercentHp (xs)
+        where fourth = (3*(getMaxHP x))/4
+
+-- A function that looks for an Ai unit whose hp<=50%
 lessThan50PercentHp:: [Unit] -> Bool
 lessThan50PercentHp []      = False
 lessThan50PercentHp (x:xs)
-    |x.getHealth <= half    = True
+    |getHealth x <= half    = True
     |otherwise              = lessThan50PercentHp (xs)
-        where half = (x.getMaxHealth)/2
+        where half = (getMaxHP x)/2
 
 -- A function that returns an Action for the AI to perform. 
-chooseAction:: Unit -> [Unit] -> [Unit] -> Action
-chooseAction ai (ais:friends) (player:rest) 
-            |lessThan50PercentHp (ai:ais:friends) = Heal (ai, allie)
-            |otherwise                            = Attack (ai, enemy) 
+chooseAction:: Unit -> [Unit] -> [Unit] -> IO Action
+chooseAction ai (ais:friends) (player:rest) = do
+        x <- rollDice
+        if lessThan50PercentHp (ai:ais:friends) && rollDice <= 35
+            then return  Heal (ai, allie)
+            else return  Attack (ai, enemy) 
                 where allie = findLowestHp (ai:ais:friends)
                       enemy = findLowestHp (player:rest)
+
+-- A function that returns an Action for a boss unit AI to perform, if there is one.
+chooseBossAction:: Unit -> [Unit] -> IO Action
+chooseBossAction self (player:rest) = error "stub"
+
+-- A function that checks if a given Unit is a normal unit or a boss unit.
+isBoss:: Unit 
+isBoss ai = error "stub"
+
+-- A helper function for chooseAction 
+rollDice :: IO Int
+rollDice = getStdRandom (randomR (1,100))
