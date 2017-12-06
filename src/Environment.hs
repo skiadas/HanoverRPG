@@ -24,7 +24,7 @@ module Environment
 	updateMap
 ) where
 
--- Module starts here.
+-- Module starts here
 
  -- Needs Fixed, Possible Block types: S (Start), G (Goal)
 data Type = X | O | I
