@@ -12,7 +12,7 @@ commentary with @some markup@.
 
 module Combat
 (
-    updateUnit
+    doBattle
 ) where
 
 import Combat.ActionOptions
@@ -37,39 +37,52 @@ updateUnit source target action = health + effect
     where effect = actionValue source action
           health = getHealth target
 
---Carry out the action provided by the UI team. sourceTurn & targetTurn should be calling each other
---to continue the fight until the UI or the AI unit "isDead"
+{-  
+    1) Carry out the action provided by the UI team. Continue the "battle" until either the source or target
+        (also referred to as "hero" and "enemy" in other modules) is dead.
+    2) To begin, we must ask UI for an action to be taken (should be of IO type). 
+    3) Then, we need to see if the current source is dead or not. 
+         If the source (in this case, the hero unit) is dead, we need to return (source,target) because
+         other teams are dependent on the (hero,enemy) tuple. 
+    4) When the action phase is complete, we need to ask the enemy for their action in order to continue the battle 
+         (Call the enemyTurn function)
+-}
+
 heroTurn :: Unit -> Unit -> IO (Unit, Unit)
 heroTurn source target = do
     turn <- UI.getAction((source, target))
-    if getHealth(source) <= 0 = return (source, target)
+    if isDead(source) = return (source, target)
     else 
         case turn of
             Attack (source, target) -> updateUnit source target turn
             Heal   (source, target) -> updateUnit source target turn
-    --Action phase is complete, now we ask the "enemy" for their action choice through the enemyTurn function
     enemyTurn target source
 
---Carry out the action provided by the AI team. sourceTurn & targetTurn should be calling each other
---to continue the fight until the UI or the AI unit "isDead"
+{-  
+    1)  Carry out the action provided by the UI team. Continue the "battle" until either the source or target
+        (also referred to as "hero" and "enemy" in other modules) is dead.
+    2) To begin, we must ask AI for an action to be taken (should be of IO type). 
+    3) Then, we need to see if the current source is dead or not. 
+         If the source (in this case, the enemy unit) is dead, we need to return (target,source) because
+         other teams are dependent on the (hero,enemy) tuple. However, this function is written as (enemy, hero).
+    4) When the action phase is complete, we need to ask the hero for their action in order to continue the battle 
+         (Call the heroTurn function)
+-}
 enemyTurn :: Unit -> Unit -> IO (Unit, Unit)
 enemyTurn source target = do
-    --Request the action from the AI module (should be of IO type)
     turn <- AI.chooseAction((source,target))
-    --Checks to see if current source is dead. If they are, we only need to return the pairing
-    --Must return (target,source) to be consistent with the accepted values of (hero, enemy)
-    if getHealth(source) <= 0 = return (target,source)
-    else
+    if isDead(source) = return (target,source)
+    else 
         case turn of
             Attack (source, target)-> updateUnit source target turn
             Heal   (source, target)-> updateUnit source target turn
-    --Action phase has been completed, now we ask the "hero" for their action choice
-    --by calling the heroTurn function
     heroTurn target source 
 
---This is the primary function that is used to call the rest of the combat functions
---This takes two units and returns an IO unit for the game module to store and update
---Determines which character goes first based off of who has the highest speed
+{- 
+   This is the primary function that is used to call the rest of the combat functions.
+   This takes two units and returns an IO unit for the game module to store and update in state.
+   Determines which character goes first based off of who has the highest speed and begins combat.
+-}
 doBattle :: Unit -> Unit -> IO (Unit, Unit)
 doBattle source target | getSpeed(source) >= getSpeed(target) = heroTurn source target
                        | otherwise = enemyTurn target source
