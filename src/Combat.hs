@@ -6,8 +6,12 @@ Copyright   : (c) Kenny Jarnagin, 2017
 License     : MIT
 Maintainer  : jarnagink19@hanover.edu
 
-Here is a longer description of this module, containing some
-commentary with @some markup@. 
+This module is designed to carryout the "battle phase" of the Battle for the Point game.
+
+Basically, this module is given a "hero" and an "enemy" unit and then communicates with the UI and AI teams
+to figure out what their units do, respectively. The battle ends when one of the units is "dead".
+
+
 -}
 
 module Combat
@@ -84,8 +88,8 @@ enemyTurn source target = do
    Determines which character goes first based off of who has the highest speed and begins combat.
 -}
 doBattle :: Unit -> Unit -> IO (Unit, Unit)
-doBattle source target | getSpeed(source) >= getSpeed(target) = heroTurn source target
-                       | otherwise = enemyTurn target source
+doBattle hero enemy | getSpeed(hero) >= getSpeed(enemy) = heroTurn hero enemy
+                    | otherwise = enemyTurn enemy hero
 
 
 
