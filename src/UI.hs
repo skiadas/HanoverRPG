@@ -10,6 +10,11 @@ The UI module communicates with the user by writing fancy ANSI graphics to
 the terminal and accepting user input in the form of text. The Game Module will
 call functions with the required parameters to display information to the user.
 Game runs the game loop and requests user input at times.
+
+To Install Deps:
+cabal update
+cabal install ansi-terminal
+
 -}
 module UI
 (
@@ -30,19 +35,23 @@ import System.Console.ANSI
 import System.IO
 import Data.Char
 import Control.Monad
+import Combat.ActionOptions
 
+-- Coordinates for a string on the terminal. 
 type Coords = (String, Int, Int)
 inventory :: Coords 
 inventory = ("Inventory: ", 8,0)
 
 -- IMPORT FROM GAME
-data Event = Win | Lose
+data Event = Win | Lose | WinGame | LoseGame
 data Movement = Forwards | Backwards | Left | Right
 
 -- Display Event
 displayEvent :: Event -> IO()
 displayEvent Win = drawEvent "You Win"
 displayEvent Lose = drawEvent "You Lose"
+displayEvent WinGame = drawEvent "You Have Defeated The Biggest Game On Hanove. Yippee ki-yay"
+displayEvent LoseGame = drawEvent "You Have Lost The Game"
 
 -- Draw The Starting Data. Sets Custom Color
 drawFirstScreen :: IO()
@@ -57,9 +66,7 @@ drawFirstScreen = do
 promptUserName :: IO String
 promptUserName = do
     prompt "Enter Your Name: "
-    name <- getLine
-
-    if not (null name) then return name else return "Joker"
+    getLine
 
 -- Ask The User If They Want To Exit
 promptUserExit :: IO Bool
@@ -77,7 +84,7 @@ promptUserExit = do
     -- -- return comTuple
 
 -- Ask The User Where They Want To Go
-promptUserMovement :: IO(Movement)
+promptUserMovement :: IO Movement
 promptUserMovement = do
     prompt "Which Direction Do You Wish To Move? (Forwards[f], Backwards[b], Left[L], Right[r] ) "
     commands <- getLine
@@ -85,8 +92,23 @@ promptUserMovement = do
     return (stringToMovement (map toLower commands))
 
 -- Ask The User What Action They Want To Take?
-promptUserAction :: IO()
-promptUserAction = drawScreen
+promptUserAction :: Unit -> Unit -> IO Action
+promptUserAction u1 u2 = do
+    prompt "Do You Want To Heal or Attack? "
+    commands <- getLine
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+    case commands of
+        "attack" -> return Attack(u1, u2)
+        "a" -> return Attack(u1, u2)
+        "heal" -> return Heal(u1, u2)
+        "h" -> return Heal(u1, u2)
 
 prompt :: String -> IO()
 prompt p = do 
@@ -110,6 +132,55 @@ drawHeroStat = do
     drawStat ("Defence", stamina, 2,0)
     drawStat ("Speed", stamina, 3,0)
 
+=======
+>>>>>>> 812882a8fb793956d2b8a83e21f3992ef7da3aae
+>>>>>>> 2f57f3a01506edc1420d90babef51d550e2b97dd
+>>>>>>> 9011ecea178a210d18eb9a3026ba487e21bac948
+
+    case commands of
+        "attack" -> return Attack(u1, u2)
+        "a" -> return Attack(u1, u2)
+        "heal" -> return Heal(u1, u2)
+        "h" -> return Heal(u1, u2)
+
+-- Prompt the user for string
+prompt :: String -> IO()
+prompt p = do 
+    showCursor
+    drawString (p, 15, 0)
+
+-- Convert user input to Movement Types
+stringToMovement :: String -> Movement
+stringToMovement "f" = Forwards
+stringToMovement "b" = Backwards
+stringToMovement "l" = Left
+stringToMovement "r" = Right
+stringToMovement "forwards" = Forwards
+stringToMovement "backwards" = Backwards
+stringToMovement "left" = Left
+stringToMovement "right" = Right
+
+-- Take in thje hero information and display it to the user
+drawHeroStat :: IO()
+drawHeroStat = do
+    drawStat ("Health", health, 0,0)
+    drawStat ("Attack", dex, 1,0)
+    drawStat ("Defence", stamina, 2,0)
+    drawStat ("Speed", stamina, 3,0)
+
+<<<<<<< HEAD
+-- Take in an enemy stat and display it to the user
+=======
+<<<<<<< HEAD
+-- Take in an enemy stat and display it to the user
+=======
+<<<<<<< HEAD
+-- Take in an enemy stat and display it to the user
+=======
+>>>>>>> f7a4dbbdcbc618a5529020026d0eabc8caed5d40
+>>>>>>> 812882a8fb793956d2b8a83e21f3992ef7da3aae
+>>>>>>> 2f57f3a01506edc1420d90babef51d550e2b97dd
+>>>>>>> 9011ecea178a210d18eb9a3026ba487e21bac948
 drawEnemyStat :: IO()
 drawEnemyStat = do
     drawStat ("Enemy Health", health, 0, 40)
