@@ -80,7 +80,8 @@ playMain:: IO()
 playMain = do
 	-- call blank game to generate initial game state
 	-- ask for userName from UI to make hero
-	hero <- makeHero "John McClane"
+	userName <- promptUserName
+	hero <- makeHero userName
 	-- enemy <- makeEnemy
 	let enemyList = makeAllEnemies
 	-- playOneEnemy hero enemy
