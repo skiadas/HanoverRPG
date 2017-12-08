@@ -16,6 +16,6 @@ module GameUIinfo.UIcommands
 
 ) where
 
-data Event = Win | Lose
+data Event = Win | Lose | WinGame | LoseGame
 
 

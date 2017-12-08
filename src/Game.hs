@@ -71,9 +71,9 @@ makeAllEnemies = [createUnit "Simon Gruber" 100 10 10 10 False,
 						createUnit "Karl Vreski" 100 10 10 10 False,
 						createUnit "Hans Gruber" 100 10 10 10 False]
 
-makeEnemy:: IO Unit
-makeEnemy = do
-	return (createUnit "Hans Gruber" 100 10 10 10 False)
+-- makeEnemy:: IO Unit
+-- makeEnemy = do
+-- 	return (createUnit "Hans Gruber" 100 10 10 10 False)
 
 
 playMain:: IO()
@@ -89,20 +89,20 @@ playMain = do
 
 
 
-playOneEnemy:: Unit -> Unit -> IO()
-play hero enemy state = do
-	if getHealth hero == 0 then putStrLn "Game Over" else
-		do updatedPlayers <- doBattle hero enemy
-		if getHealth fst(updatedPlayers) == 0 then putStrLn "You Lost!" else putStrLn "You Won!"
+-- playOneEnemy:: Unit -> Unit -> IO()
+-- play hero enemy state = do
+-- 	if getHealth hero == 0 then putStrLn "Game Over" else
+-- 		do updatedPlayers <- doBattle hero enemy
+-- 		if getHealth fst(updatedPlayers) == 0 then putStrLn "You Lost!" else putStrLn "You Won!"
 
 
 play:: Unit -> [Unit] -> IO()
 play hero [] = do
-	putStrLn "Yippie Ki Yay! Motherf*****! You have saved the President!"
+	displayEvent WinGame
 play hero (enemy:rest) = do
 	updatedPlayers <- doBattle hero enemy
-	if getHealth fst(updatedPlayers) == 0 then putStrLn "Game Over! You're dead!" else
+	if getHealth fst(updatedPlayers) == 0 then displayEvent Lose else
 		do if rest /= [] then do
-			putStrLn getName snd(updatedPlayers) ++ " is dead! But can you survive the wrath of " ++ getName (head rest)
+			displayEvent Win
 		play fst(updatedPlayers) rest
 
