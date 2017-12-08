@@ -3,21 +3,26 @@ Module      : UI
 Description : The UI module
 Copyright   : (c) Alexander Martens, 2017
                   Patrick Conboy, 2017
-License     : MIT ( (BSD-3) )
+License     : MIT
 Maintainer  : conboyp19@hanover.edu
 
 The UI module communicates with the user by writing fancy ANSI graphics to 
-the terminal and accepting user input in the form of text. The UI module is 
-reponsible for all interaction with the user. The UI module shall call other
-modules in accordance with the terms. No other module shall interfere with user
-input, and no other module may ping the UI module to do anything. The user is the
-only one the application serves. (((Google)))
-Random events for any reason will be triggered by the UI and the UI will always supply
-sufficient information for the rest of the application.
+the terminal and accepting user input in the form of text. The Game Module will
+call functions with the required parameters to display information to the user.
+Game runs the game loop and requests user input at times.
 -}
--- (
+module UI
+(
+    drawFirstScreen,
+    displayEvent,
+    promptUserName,
+    promptUserExit,
+    promptUserMovement,
+    promptUserAction,
+    drawEnemyStat,
+    drawHeroStat
 
--- ) where
+) where
 
 -- Module starts here.
 import Prelude hiding (Either(..))
@@ -26,94 +31,91 @@ import System.IO
 import Data.Char
 import Control.Monad
 
-data Command = Empty
-            |Move
-            |I
-            |Equip
-            |Use
-            |Pickup
-            |Exit
-            |Attack
+type Coords = (String, Int, Int)
+inventory :: Coords 
+inventory = ("Inventory: ", 8,0)
 
-data SubCommand = Void
-                |F
-                |B
-                |L
-                |R
-                |Show
-                |Heal
-                |Sword
-                |Weapon
-                |Armour
+-- IMPORT FROM GAME
+data Event = Win | Lose
+data Movement = Forwards | Backwards | Left | Right
 
+-- Display Event
+displayEvent :: Event -> IO()
+displayEvent Win = drawEvent "You Win"
+displayEvent Lose = drawEvent "You Lose"
 
-stringToCom :: String -> Command
-stringToCom "move" = Move
-stringToCom "i" = I
-stringToCom "use" = Use
-stringToCom "pickup" = Pickup
-stringToCom "exit" = Exit
-stringToCom "equip" = Equip
-stringToCom "" = Attack
-stringToCom _ = Empty
+-- Draw The Starting Data. Sets Custom Color
+drawFirstScreen :: IO()
+drawFirstScreen = do 
+    setTitle "Battle! For The Point"
+    setSGR [ SetConsoleIntensity BoldIntensity
+            , SetColor Foreground Dull Red
+            , SetColor Background Dull Black ]
+    drawScreen
 
-stringToSubCom :: String -> SubCommand
-stringToSubCom "f" = F
-stringToSubCom "b" = B
-stringToSubCom "l" = L
-stringToSubCom "r" = R
-stringToSubCom "show" = Show
-stringToSubCom "food" = Heal --food?
-stringToSubCom "sword" = Sword
-stringToSubCom "weapon" = Weapon
-stringToSubCom "armor" = Armour
-stringToSubCom _ = Void
+-- Ask The User For Their Name
+promptUserName :: IO String
+promptUserName = do
+    prompt "Enter Your Name: "
+    name <- getLine
 
-readCom :: [String] -> (Command, SubCommand)
-readCom s = (s', s'')
-    where   s' = if not (null s) then stringToCom (head s) else stringToCom ""
-            s'' = if length s == 2 then stringToSubCom (s !! 1) else stringToSubCom ""
+    if not (null name) then return name else return "Joker"
 
---Method to change user input to commands
-processCommand :: String -> (Command, SubCommand)
-processCommand s = readCom (words (map toLower s))
+-- Ask The User If They Want To Exit
+promptUserExit :: IO Bool
+promptUserExit = do
+    prompt "Do You Want To Exit? "
+    commands <- getLine
 
-processName :: String -> String
-processName s = s
+    if commands == "yes" || commands == "y"
+        then do
+            handleExit
+            return True
+        else return False
 
---Method to execute commands
-executeCommand :: (Command, SubCommand) -> IO()
-executeCommand (Move, F) = moveF
-executeCommand (Move, B) = moveB
-executeCommand (Move, L) = moveL
-executeCommand (Move, R) = moveR
-executeCommand (I, Show) = drawScreen -- keep this command or?
-executeCommand (Use, Heal) = healMe
-executeCommand (Pickup, Void) = pickupThis
-executeCommand (Exit, Void) = handleExit
-executeCommand (Attack, _) = attack
-executeCommand (Equip, a) = equip a
-executeCommand (_, _) = printWarning
+    -- let comTuple = processCommand commands
+    -- -- return comTuple
 
---commands-- TODO:hook these up
-moveF :: IO()
-moveF = drawString ("Slot 10: RED",13,20)
-moveB :: IO()
-moveB = drawString ("Slot 10: RED",13,20)
-moveL :: IO()
-moveL = drawString ("Slot 10: RED",13,20)
-moveR :: IO()
-moveR = drawString ("Slot 10: RED",13,20)
-healMe :: IO()
-healMe = drawString ("Slot 10: RED",13,20)
-pickupThis :: IO()
-pickupThis = drawString ("Slot 10: RED",13,20)
-attack :: IO()
-attack = drawString ("Slot 10: RED",13,20)
+-- Ask The User Where They Want To Go
+promptUserMovement :: IO(Movement)
+promptUserMovement = do
+    prompt "Which Direction Do You Wish To Move? (Forwards[f], Backwards[b], Left[L], Right[r] ) "
+    commands <- getLine
 
---Equip the best sword, weapon, etc
-equip :: SubCommand -> IO()
-equip item = drawString ("Slot 10: RED",13,20)
+    return (stringToMovement (map toLower commands))
+
+-- Ask The User What Action They Want To Take?
+promptUserAction :: IO()
+promptUserAction = drawScreen
+
+prompt :: String -> IO()
+prompt p = do 
+    showCursor
+    drawString (p, 15, 0)
+
+stringToMovement :: String -> Movement
+stringToMovement "f" = Forwards
+stringToMovement "b" = Backwards
+stringToMovement "l" = Left
+stringToMovement "r" = Right
+stringToMovement "forwards" = Forwards
+stringToMovement "backwards" = Backwards
+stringToMovement "left" = Left
+stringToMovement "right" = Right
+
+drawHeroStat :: IO()
+drawHeroStat = do
+    drawStat ("Health", health, 0,0)
+    drawStat ("Attack", dex, 1,0)
+    drawStat ("Defence", stamina, 2,0)
+    drawStat ("Speed", stamina, 3,0)
+
+drawEnemyStat :: IO()
+drawEnemyStat = do
+    drawStat ("Enemy Health", health, 0, 40)
+    drawStat ("Enemy Attack", dex, 1, 40)
+    drawStat ("Enemy Defence", stamina, 2, 40)
+    drawStat ("Enemy Speed", stamina,32, 40)
 
 --caluculate bar width max 50 --int or string?
 calculateStat :: Int -> String
@@ -145,19 +147,21 @@ drawScreen ::IO()
 drawScreen = do
     clearScreen
     drawStat ("Health", health, 0,0)
-    drawStat ("Dexterity", dex, 1,0)
-    drawStat ("Stamina", stamina, 2,0)
-    when combat $ drawStat ("Enemy Health", health, 0, 40)
-    when combat $ drawStat ("Enemy Dexterity", dex, 1, 40)
-    when combat $ drawStat ("Enemy Stamina", stamina, 2, 40)
+    drawStat ("Attack", dex, 1,0)
+    drawStat ("Defence", stamina, 2,0)
+    drawStat ("Speed", stamina, 3,0)
+    -- when combat $ drawStat ("Enemy Health", health, 0, 40)
+    -- when combat $ drawStat ("Enemy Attack", dex, 1, 40)
+    -- when combat $ drawStat ("Enemy Defence", stamina, 2, 40)
+    -- when combat $ drawStat ("Enemy Speed", stamina,32, 40)
 
     drawString (replicate 80 '*', 4, 0)
-    drawString ("Progress: " ++ show progress ++ " " ++ calculateStat progress, 5,0)
+    -- drawString ("Progress: " ++ show progress ++ " " ++ calculateStat progress, 5,0)
     drawString ("Part 1: ", 6,0)
     drawString ("Part 2: ", 6,20)
     drawString ("Part 3: ", 6,40)
     
-    drawString ("Inventory: ", 8,0)
+    drawString inventory
 
     drawString ("Slot 1: ", 9,0)
     drawString ("Slot 2: ", 10,0)
@@ -195,6 +199,7 @@ drawStat (statName, stat, x, y) = do
         drawString (statString, x,y)
         -- drawString (statBar, x,statLength)
                 where   statString = statName ++ ": " ++ show stat
+                        d = length (show stat)
         --                 statStringLength = length statString
         --                 whitespace = replicate (statStringLength - 15) '.'
         --                 statLength = length whitespace + statStringLength
@@ -209,45 +214,28 @@ drawString (string, x, y) = do
     setCursorPosition x y
     putStr string
 
-main :: IO()
-main = do 
-    setTitle "Battle! For The Point"
-    setSGR [ SetConsoleIntensity BoldIntensity
-            , SetColor Foreground Dull Red
-            , SetColor Background Dull Black ]
-    drawScreen
-    normalGameLoop
-    
+drawEvent :: String -> IO()
+drawEvent string = do
+    setCursorPosition 22 0
+    putStr string
 
--- update the game loop to add in the goodbye message
-gameLoop :: Bool -> Bool -> IO()
-gameLoop warning firstrun = do
-    drawScreen
-    putStrLn "\n"
-    if not warning && not firstrun then putStrLn "Enter The Command: "
-                                    else if firstrun then putStrLn "What Is Your Name: "
-                                    else putStrLn "YOU MUST ENTER A VALID COMMAND: "
-    commands <- getLine
+--     putStrLn "\n"
 
-    let comTuple | not firstrun  = processCommand commands
-                 |otherwise = processName commands
+--     executeCommand comTuple
+--     case comTuple of
+--         (Exit, Void) -> handleExit
+--         _    -> normalGameLoop
 
-    executeCommand comTuple
-    case comTuple of
-        (Exit, Void) -> handleExit
-        _    -> normalGameLoop
+--     if not warning && not firstrun then putStrLn "Enter The Command: "
+--                                     else if firstrun then putStrLn "What Is Your Name: "
+--                                     else putStrLn "YOU MUST ENTER A VALID COMMAND: "
+--     commands <- getLine
 
+--     let comTuple | not firstrun  = processCommand commands
+--                  |otherwise = processName commands
+-- 
 
-printWarning :: IO()
-printWarning = gameLoop True False
-    
-normalGameLoop :: IO()
-normalGameLoop = gameLoop False False
-
-firstGameLoop :: IO()
-firstGameLoop = gameLoop False True
-
-  -- reset the SGR and give a thank you message/¿massage?
+--   -- reset the SGR and give a thank you message/¿massage?
 handleExit :: IO()
 handleExit = do
     setSGR [Reset]
