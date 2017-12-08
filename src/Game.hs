@@ -51,10 +51,7 @@ commentary with @some markup@:
 -- Since no other group seems to have imported any other group's modules
 -- Once the final version of all group modules are ready, we can go ahead and remove the redundant ones.
 
-import AI
 import Combat
-import Environment
-import Inventory
 import State
 import UI
 import Unit
@@ -65,19 +62,45 @@ module Game
 
 ) where
 
--- function that asks for user name and creates character
--- play::function play does the main game play
--- play should have acces to current state, hero and current enemy
-play:: State -> Unit -> Unit -> IO()
-play st hero enemy = do
+makeHero:: IO Unit
+makeHero = do
+	return (createUnit "John McClane" 100 10 10 10 True)
 
--- playMain::function that is called by battleFTP
+makeAllEnemies:: [Unit]
+makeAllEnemies = [createUnit "Simon Gruber" 100 10 10 10 False,
+						createUnit "Soup Nazi" 100 10 10 10 False,
+						createUnit "Karl Vreski" 100 10 10 10 False,
+						createUnit "Hans Gruber" 100 10 10 10 False]
 
--- simplest game idea: We start at the point, have a one-on-one fight with Hans Gruber and see if we win or lose.
--- let's just implement that
+makeEnemy:: IO Unit
+makeEnemy = do
+	return (createUnit "Hans Gruber" 100 10 10 10 False)
+
 
 playMain:: IO()
 playMain = do
-	let hero = createUnit "Sakib" 100 10 10 10 True
-		 enemy = createUnit "Hans Gruber" 100 10 10 10 False
-	play
+	-- call blank game to generate initial game state
+	hero <- makeHero
+	enemy <- makeEnemy
+	let enemyList = makeAllEnemies
+	playOneEnemy hero enemy
+	-- play hero enemyList
+
+
+
+playOneEnemy:: Unit -> Unit -> IO()
+play hero enemy state = do
+	if getHealth hero == 0 then putStrLn "Game Over" else
+		do updatedPlayers <- doBattle hero enemy
+		if getHealth fst(updatedPlayers) == 0 then putStrLn "You Lost!" else putStrLn "You Won!"
+
+
+play:: Unit -> [Unit] -> IO()
+play hero [] = do
+	putStrLn "Yippie Ki Yay! Motherf*****! You have saved the President!"
+play hero (enemy:rest) = do
+	updatedPlayers <- doBattle hero enemy
+	if getHealth fst(updatedPlayers) == 0 then putStrLn "Game Over! You're dead!" else
+		do putStrLn "Game Over! You're dead!"
+			play fst(updatedPlayers) rest
+
