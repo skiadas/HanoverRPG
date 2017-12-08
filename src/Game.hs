@@ -52,7 +52,6 @@ commentary with @some markup@:
 -- Once the final version of all group modules are ready, we can go ahead and remove the redundant ones.
 
 import Combat
-import State
 import UI
 import Unit
 
@@ -62,9 +61,9 @@ module Game
 
 ) where
 
-makeHero:: IO Unit
-makeHero = do
-	return (createUnit "John McClane" 100 10 10 10 True)
+makeHero:: String -> IO Unit
+makeHero str = do
+	return (createUnit str 100 10 10 10 True)
 
 makeAllEnemies:: [Unit]
 makeAllEnemies = [createUnit "Simon Gruber" 100 10 10 10 False,
@@ -80,11 +79,12 @@ makeEnemy = do
 playMain:: IO()
 playMain = do
 	-- call blank game to generate initial game state
-	hero <- makeHero
-	enemy <- makeEnemy
+	-- ask for userName from UI to make hero
+	hero <- makeHero "John McClane"
+	-- enemy <- makeEnemy
 	let enemyList = makeAllEnemies
-	playOneEnemy hero enemy
-	-- play hero enemyList
+	-- playOneEnemy hero enemy
+	play hero enemyList
 
 
 
@@ -101,6 +101,7 @@ play hero [] = do
 play hero (enemy:rest) = do
 	updatedPlayers <- doBattle hero enemy
 	if getHealth fst(updatedPlayers) == 0 then putStrLn "Game Over! You're dead!" else
-		do putStrLn "Game Over! You're dead!"
-			play fst(updatedPlayers) rest
+		do if rest /= [] then do
+			putStrLn getName snd(updatedPlayers) ++ " is dead! But can you survive the wrath of " ++ getName (head rest)
+		play fst(updatedPlayers) rest
 
